@@ -6,5 +6,6 @@ Token based authorization for django.
 
 To run tests use:
 ```
-    django-admin.py test --settings=tests.settings
+    export DJANGO_SETTINGS_MODULE=tests.settings
+    nosetests
 ```
