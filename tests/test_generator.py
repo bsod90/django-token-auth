@@ -50,7 +50,7 @@ class GenerateValidateTestCase(TestCase):
 
     def test_signature_mismatch_wrong_content(self):
         """
-            We should not validate a token if our public key does not match the private one used to sign
+            Token with wrong signature should not pass
         """
         token, _ = generate_auth_token(self.DummyUser(), 30)
         token = token.replace('john', 'jane')
