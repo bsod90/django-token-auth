@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-from myapp import __version__
+from django_token_auth import __version__
 
 
 def read(fname):
@@ -13,7 +13,7 @@ setup(
     name = "Django token authorization",
     version = ".".join(map(str, __version__)),
     description = "",
-    long_description = read('README.rst'),
+    long_description = read('README.md'),
     url = '',
     license = 'MIT',
     author = 'Maxim Leonovich',
