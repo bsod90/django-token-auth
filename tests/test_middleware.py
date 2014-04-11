@@ -33,7 +33,7 @@ class TokenAuthMiddlewareTestCase(TestCase):
 
     def test_already_authenticated_user(self):
         """
-            Should not replace existing authentication
+            Should replace existing authentication
         """
         token = 'API-TOKEN sometoken'
         request = self.factory.get('/', HTTP_AUTHORIZATION=token)
@@ -44,7 +44,7 @@ class TokenAuthMiddlewareTestCase(TestCase):
         TokenAuthenticationMiddleware().process_request(request)
 
         self.assertTrue(request.user.is_authenticated())
-        self.assertEqual(request.user.username, 'jahne')
+        self.assertEqual(request.user.username, 'john')
 
     def test_no_token(self):
         """
