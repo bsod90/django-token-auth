@@ -4,9 +4,7 @@ import os
 import pytz
 import datetime
 import base64
-from Crypto.Hash import SHA
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
+import M2Crypto
 
 from django.conf import settings
 
@@ -24,8 +22,7 @@ def get_private_key():
         """
     # We use 'or' because settings may not have TOKEN_AUTH_PRIVATE_KEY entry
     key_path = os.environ.get('DJANGO_TOKEN_AUTH_PRIVATE_KEY', None) or settings.TOKEN_AUTH_PRIVATE_KEY
-    key = open(key_path, 'r').read()
-    return RSA.importKey(key)
+    return M2Crypto.RSA.load_key(key_path)
 
 
 def get_public_key():
@@ -42,8 +39,7 @@ def get_public_key():
         """
     # We use 'or' because settings may not have TOKEN_AUTH_PUBLIC_KEY entry
     key_path = os.environ.get('DJANGO_TOKEN_AUTH_PUBLIC_KEY', None) or settings.TOKEN_AUTH_PUBLIC_KEY
-    key = open(key_path, 'r').read()
-    _cached_public_key = RSA.importKey(key)
+    _cached_public_key = M2Crypto.RSA.load_pub_key(key_path)
     return _cached_public_key
 
 
@@ -80,9 +76,7 @@ def generate_auth_token(user, ttl, identification_field='username'):
         expiration_time=expiration_time.strftime("%Y-%m-%dT%H:%M:%S")
     )
 
-    signer = PKCS1_v1_5.new(private_key)
-    token_hash = SHA.new(token_content)
-    signature = signer.sign(token_hash)
+    signature = private_key.sign(token_content)
 
     signed_token = "{token_content}|{signature}".format(
         token_content=token_content,
@@ -115,10 +109,10 @@ def validate_auth_token(token):
     signature = base64.b64decode(signature)
 
     public_key = get_public_key()
-    verifier = PKCS1_v1_5.new(public_key)
-    token_hash = SHA.new(token_content)
-
-    if not verifier.verify(token_hash, signature):
+    try:
+        if not public_key.verify(token_content, signature):
+            return None
+    except:
         # Token is not valid!
         return None
 
