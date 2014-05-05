@@ -11,7 +11,7 @@ requirements = []
 
 setup(
     name = "Django token authorization",
-    version = ".".join(map(str, (0,0,1))),
+    version = ".".join(map(str, (0,0,2))),
     description = "",
     long_description = read('README.md'),
     url = '',
